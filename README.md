@@ -1,8 +1,8 @@
 # Banking System: UML Design
 
-A UML design for the core system of a retail bank branch. It covers customers and staff, savings, current and fixed deposit accounts, cash and transfers, cheques, ATM withdrawals and loans. It was drawn for a university software engineering course in 2022 and revised in 2026, so that all nine diagrams describe the same system with the same names.
+A UML design for the core system of a retail bank branch. It covers customers and staff, savings, current and fixed deposit accounts, cash and transfers, cheques, ATM withdrawals and loans. All nine diagrams describe the same system with the same names.
 
-This is a design, not an implementation. Every diagram below is written in [Mermaid](https://mermaid.js.org/) and renders directly on GitHub. The class diagram is too large for GitHub's viewer, so it is shown as an image, with its Mermaid source underneath. The original StarUML files are kept in [`original/`](original/).
+This is a design, not an implementation. Every diagram below is written in [Mermaid](https://mermaid.js.org/) and renders directly on GitHub. The class diagram is too large for GitHub's viewer, so it is shown as an image, with its Mermaid source underneath. StarUML files are in [`original/`](original/).
 
 **Contents**
 
@@ -437,13 +437,3 @@ flowchart TB
     core & products & payments & staff & support -.-> persistence
     ui -.-> security
 ```
-
-## Changes from the 2022 version
-
-The original diagrams were drawn separately and did not agree with each other. This revision:
-- **Class diagram:** it had only Bank, Account, Client and a savings subclass. It now includes every concept the other diagrams use: branches, staff roles, current accounts, fixed deposits, transactions, cheques, cards, loans and complaints.
-- **Use case diagram:** removed use cases that inherited from "log in" and actors associated with themselves; "log in" is now included where it's needed.
-- **State machine diagrams:** the staff roles drawn as states were replaced by the life cycles of a cheque and a loan.
-- **Communication diagram:** the ATM withdrawal was split from the unrelated branch-reception messages.
-- **Clean-up:** removed placeholder names (Class1, UseCase16, Interface1–5, Component1–2, Package9) and fixed spelling.
-- **Format:** the diagrams are now written as text, so they can be read and reviewed on GitHub without StarUML.
