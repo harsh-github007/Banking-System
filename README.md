@@ -2,7 +2,7 @@
 
 A UML design for the core system of a retail bank branch. It covers customers and staff, savings, current and fixed deposit accounts, cash and transfers, cheques, ATM withdrawals and loans. It was drawn for a university software engineering course in 2022 and revised in 2026, so that all nine diagrams describe the same system with the same names.
 
-This is a design, not an implementation. Every diagram below is written in [Mermaid](https://mermaid.js.org/) and renders directly on GitHub. The original StarUML files are kept in [`original/`](original/).
+This is a design, not an implementation. Every diagram below is written in [Mermaid](https://mermaid.js.org/) and renders directly on GitHub. The class diagram is too large for GitHub's viewer, so it is shown as an image, with its Mermaid source underneath. The original StarUML files are kept in [`original/`](original/).
 
 **Contents**
 
@@ -74,7 +74,14 @@ flowchart LR
 
 The domain model. `Account` is abstract, and every change to a balance is recorded as a `Transaction`, so the statement is always the full history.
 
-```mermaid
+![Class diagram](docs/class-diagram.png)
+
+<details>
+<summary>Mermaid source</summary>
+
+The same diagram as text, also in [`docs/class-diagram.mmd`](docs/class-diagram.mmd).
+
+```text
 classDiagram
     direction TB
     class Bank {
@@ -195,6 +202,8 @@ classDiagram
     Customer "1" -- "*" Complaint : raises
     Employee "1" -- "*" Complaint : resolves
 ```
+
+</details>
 
 ## 3. Sequence diagrams
 

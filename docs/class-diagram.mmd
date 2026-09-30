@@ -1,0 +1,119 @@
+classDiagram
+    direction TB
+    class Bank {
+        +name: String
+        +openBranch(ifsc) Branch
+    }
+    class Branch {
+        +ifsc: String
+        +address: String
+        +openAccount(customer, type) Account
+    }
+    class Customer {
+        +customerId: String
+        +name: String
+        +address: String
+        +aadhaarVerified: Boolean
+        +accounts() List~Account~
+    }
+    class Employee {
+        <<abstract>>
+        +employeeId: String
+        +name: String
+    }
+    class Receptionist
+    class Cashier
+    class Accountant
+    class BranchManager {
+        +approve(loan)
+        +reject(loan, reason)
+    }
+    class Account {
+        <<abstract>>
+        +accountNumber: String
+        +balance: Decimal
+        +status: AccountStatus
+        +deposit(amount) Transaction
+        +withdraw(amount) Transaction
+        +transferTo(account, amount) Transaction
+        +statement(from, to) List~Transaction~
+    }
+    class SavingsAccount {
+        +interestRate: Decimal
+        +accrueInterest() Transaction
+    }
+    class CurrentAccount {
+        +overdraftLimit: Decimal
+    }
+    class FixedDeposit {
+        +principal: Decimal
+        +interestRate: Decimal
+        +termMonths: Integer
+        +maturityValue() Decimal
+        +closePrematurely() Transaction
+    }
+    class Transaction {
+        +transactionId: String
+        +type: TransactionType
+        +amount: Decimal
+        +balanceAfter: Decimal
+        +timestamp: DateTime
+    }
+    class ChequeBook {
+        +firstNumber: Integer
+        +leaves: Integer
+    }
+    class Cheque {
+        +number: Integer
+        +payee: String
+        +amount: Decimal
+        +status: ChequeStatus
+        +stop()
+    }
+    class DebitCard {
+        +cardNumber: String
+        +expiry: Date
+        +pinHash: String
+    }
+    class Loan {
+        +loanType: LoanType
+        +principal: Decimal
+        +annualRate: Decimal
+        +termMonths: Integer
+        +status: LoanStatus
+        +emi() Decimal
+        +schedule() List~Instalment~
+    }
+    class Complaint {
+        +raisedOn: Date
+        +description: String
+        +resolved: Boolean
+    }
+    class LoanType {
+        <<enumeration>>
+        CAR
+        HOME
+        GOLD
+        EDUCATION
+    }
+
+    Bank "1" *-- "1..*" Branch
+    Branch "1" o-- "1..*" Employee
+    Branch "1" -- "*" Account : holds
+    Employee <|-- Receptionist
+    Employee <|-- Cashier
+    Employee <|-- Accountant
+    Employee <|-- BranchManager
+    Customer "1..*" -- "*" Account : owns
+    Account <|-- SavingsAccount
+    Account <|-- CurrentAccount
+    Account <|-- FixedDeposit
+    Account "1" *-- "*" Transaction
+    Account "1" -- "*" ChequeBook
+    ChequeBook "1" *-- "1..*" Cheque
+    Account "1" -- "0..2" DebitCard
+    Customer "1" -- "*" Loan : borrows
+    Loan ..> LoanType
+    BranchManager "1" -- "*" Loan : approves
+    Customer "1" -- "*" Complaint : raises
+    Employee "1" -- "*" Complaint : resolves
