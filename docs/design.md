@@ -2,6 +2,32 @@
 
 These are the revised, canonical design views. Original StarUML files are preserved as historical source material; they have not been synchronized to this revision. Requirements and acceptance scenarios are in [requirements.md](requirements.md).
 
+## Design at a glance
+
+The design covers customer accounts, internal transfers, cash operations, ATM withdrawals, deposits, cheques and loans. One posting service owns financial journals; other workflows request postings rather than changing balances independently.
+
+```mermaid
+flowchart LR
+    Channel[Bank channels] --> Access[Authenticate and authorize]
+    Access --> Workflow[Account and payment workflows]
+    Workflow --> Posting[Posting service]
+    Posting --> Ledger[(Ledger and holds)]
+    Ledger --> Outbox[Committed notifications]
+    ATM[ATM outcome] --> Reconcile[Reconciliation]
+    Reconcile --> Workflow
+```
+
+- **Transfers:** matching request keys return the same result; balanced postings and the result commit together.
+- **ATM withdrawals:** reserve funds first. Settle a confirmed dispense, release a confirmed failure, and reconcile an uncertain outcome.
+- **Loans:** document verification, approval and disbursement are separate steps.
+- **Audit:** financial journals are immutable; corrections use reversals. Notifications follow a committed outbox.
+
+Scope: one bank, internal same-currency transfers and one transactional database. This is a design study; the acceptance scenarios describe expected behavior for a future implementation.
+
+---
+
+## Detailed views
+
 ## Use cases
 
 This is a use-case relationship map drawn with Mermaid flowchart syntax, not formal UML include/extend notation. Authentication is a precondition for protected actions; approval is not implicitly part of document verification.
