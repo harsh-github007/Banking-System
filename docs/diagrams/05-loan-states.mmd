@@ -1,0 +1,18 @@
+stateDiagram-v2
+    [*] --> Applied
+    Applied --> AwaitingDocuments: documents incomplete
+    AwaitingDocuments --> UnderReview: documents verified
+    Applied --> UnderReview: documents verified
+    UnderReview --> Approved: authorized approval
+    UnderReview --> Rejected: authorized rejection
+    Approved --> Active: successful disbursement posting
+    Approved --> Cancelled: approval expires or customer declines
+    Active --> Overdue: scheduled payment missed under configured policy
+    Overdue --> Active: arrears settled
+    Overdue --> WrittenOff: explicit authorized accounting decision
+    Active --> Closed: all amounts due settled
+    WrittenOff --> Recovery: recovery workflow initiated
+    Recovery --> Closed: recovery or approved settlement complete
+    Rejected --> [*]
+    Cancelled --> [*]
+    Closed --> [*]

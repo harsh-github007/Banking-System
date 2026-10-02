@@ -1,0 +1,25 @@
+flowchart LR
+    Channels[Existing branch, customer and ATM channels]
+    Gateway[Access gateway]
+    Identity[Identity and authorization]
+    subgraph App[Modular banking application]
+        Customer[Customer and onboarding]
+        Accounts[Accounts and products]
+        Payments[Transfers and withdrawal orchestration]
+        Loans[Loan workflow]
+        Cheques[Cheque workflow]
+        Support[Complaints]
+        Posting[Posting service]
+        Persistence[Transactional persistence]
+    end
+    DB[(Relational ledger database)]
+    Outbox[Outbox notification worker]
+    Reconcile[Reconciliation worker]
+    Channels --> Gateway
+    Gateway --> Identity
+    Gateway --> Customer & Accounts & Payments & Loans & Cheques & Support
+    Payments & Loans & Cheques & Accounts --> Posting
+    Customer & Accounts & Payments & Loans & Cheques & Support & Posting --> Persistence
+    Persistence --> DB
+    DB --> Outbox
+    Reconcile --> Payments & Cheques
