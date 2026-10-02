@@ -4,6 +4,28 @@ A design study of retail banking: customer accounts, internal transfers, branch 
 
 This repository contains **design documentation**, not a deployed banking application. The revised model focuses on financial consistency and clear failure handling. Original StarUML coursework is preserved separately. No frontend has been added.
 
+## Design at a glance
+
+The design covers customer accounts, internal transfers, cash operations, ATM withdrawals, deposits, cheques and loans. One posting service owns financial journals; other workflows request postings rather than changing balances independently.
+
+```mermaid
+flowchart LR
+    Channel[Bank channels] --> Access[Authenticate and authorize]
+    Access --> Workflow[Account and payment workflows]
+    Workflow --> Posting[Posting service]
+    Posting --> Ledger[(Ledger and holds)]
+    Ledger --> Outbox[Committed notifications]
+    ATM[ATM outcome] --> Reconcile[Reconciliation]
+    Reconcile --> Workflow
+```
+
+- **Transfers:** matching request keys return the same result; balanced postings and the result commit together.
+- **ATM withdrawals:** reserve funds first. Settle a confirmed dispense, release a confirmed failure, and reconcile an uncertain outcome.
+- **Loans:** document verification, approval and disbursement are separate steps.
+- **Audit:** financial journals are immutable; corrections use reversals. Notifications follow a committed outbox.
+
+Scope: one bank, internal same-currency transfers and one transactional database. This is a design study; the acceptance scenarios describe expected behavior for a future implementation.
+
 ## Read the design
 
 | Document | Purpose |
@@ -13,30 +35,6 @@ This repository contains **design documentation**, not a deployed banking applic
 | [Design decisions](docs/decisions.md) | Architecture choices, examples and limits |
 | [Mermaid sources](docs/diagrams/) | Editable sources for every revised diagram |
 | [Original coursework](original/) | Historical StarUML files and Word document |
-
-## Core architecture
-
-Existing bank channels call an authorized application service. Business workflows use one posting service and a transactional ledger database. Notifications consume committed outbox events; reconciliation resolves uncertain external outcomes.
-
-```mermaid
-flowchart LR
-    Channels[Existing bank channels] --> Access[Authentication and authorization]
-    Access --> Workflows[Accounts, transfers, loans and cheques]
-    Workflows --> Posting[Posting service]
-    Posting --> DB[(Transactional ledger)]
-    DB --> Notifications[Outbox notifications]
-    Reconciliation[Reconciliation] --> Workflows
-```
-
-## What is improved
-
-- **Balanced ledger:** immutable journals and per-currency debit/credit postings replace independent mutable balance updates.
-- **Safe transfer retries:** request identity, payload matching and one atomic commit prevent partial transfers and duplicate posting.
-- **Realistic ATM outcomes:** reservations, confirmed dispense, confirmed failure and unresolved outcomes have different paths.
-- **Clear loan workflow:** verification, approval and disbursement are separate; approval does not mean funds have been sent.
-- **Separate identity and account states:** failed login controls do not change the account's financial lifecycle.
-- **Explicit product policies:** fixed deposits, overdrafts, cheque clearing and loan recovery do not inherit unrestricted behaviour.
-- **Consistent documentation:** every revised diagram has a source file and accompanying explanation. Requirements link to acceptance scenarios.
 
 ## Domain and ledger models
 
