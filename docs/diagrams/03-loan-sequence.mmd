@@ -1,0 +1,25 @@
+sequenceDiagram
+    actor C as Customer
+    participant R as Receptionist
+    participant V as Accountant
+    participant M as Branch Manager
+    participant L as Loan Service
+    participant P as Posting Service
+    C->>R: Application and documents
+    R->>L: Create application
+    V->>L: Record verification outcome
+    alt Documents incomplete
+        L-->>C: Awaiting documents, request corrections
+    else Documents verified
+        M->>L: Approve or reject with actor and reason
+        L->>L: Check authority and separation of duties
+        alt Rejected
+            L-->>C: Rejection with reason
+        else Approved
+            L-->>C: Approved terms, not yet funded
+            V->>L: Authorized disbursement with idempotency key
+            L->>P: Check approval, recipient and current conditions
+            P->>P: Commit balanced journal, Active status and audit atomically
+            P-->>C: Disbursed with schedule and operation ID
+        end
+    end
