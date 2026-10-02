@@ -1,0 +1,20 @@
+flowchart TD
+    S([Start]) --> Cred[Submit credentials]
+    Cred --> Rate{Rate limit or identity lock?}
+    Rate -->|Yes| Reject[Reject attempt without revealing identity existence]
+    Rate -->|No| Verify[Verify credentials through identity service]
+    Verify --> Valid{Valid?}
+    Valid -->|No| Count[Record failed attempt and audit]
+    Count --> Policy{Configured threshold reached?}
+    Policy -->|Yes| Lock[Temporary identity lock and recovery process]
+    Policy -->|No| Retry[Allow policy-controlled retry]
+    Valid -->|Yes| MFA[Perform required additional authentication]
+    MFA --> Passed{Successful?}
+    Passed -->|No| Reject
+    Passed -->|Yes| Session[Create short-lived session]
+    Session --> Service[Authorize each service request]
+    Service --> Logout[Logout or session expiration]
+    Logout --> E([Finish])
+    Reject --> E
+    Lock --> E
+    Retry --> E

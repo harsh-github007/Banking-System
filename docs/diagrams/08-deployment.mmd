@@ -1,0 +1,20 @@
+flowchart LR
+    Staff[Branch workstation]
+    Customer[Customer device]
+    ATM[ATM device]
+    Edge[Private or public channel gateway]
+    Adapter[Card network protocol adapter]
+    App[Banking application process]
+    Id[Identity service]
+    DB[(Primary relational database)]
+    Workers[Notification and reconciliation workers]
+    Backup[(Encrypted backup storage)]
+    Staff -->|TLS over bank network| Edge
+    Customer -->|TLS| Edge
+    ATM -->|Protected card-network channel| Adapter
+    Adapter --> Edge
+    Edge -->|Authenticated internal channel| App
+    App --> Id
+    App -->|TLS with restricted service identity| DB
+    Workers --> DB
+    DB --> Backup

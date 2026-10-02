@@ -1,0 +1,54 @@
+classDiagram
+    direction LR
+    class Account {
+        +String accountId
+        +String currency
+    }
+    class LedgerAccount {
+        +String ledgerAccountId
+        +String currency
+        +String accountType
+    }
+    class JournalEntry {
+        +String journalId
+        +String operationId
+        +DateTime postedAt
+        +String reversalOf
+    }
+    class Posting {
+        +String side
+        +String currency
+        +long amountMinor
+    }
+    class TransferRequest {
+        +String requestId
+        +String idempotencyKey
+        +String payloadHash
+        +RequestStatus status
+    }
+    class Hold {
+        +String holdId
+        +String currency
+        +long amountMinor
+        +HoldStatus status
+    }
+    class AuditEvent {
+        +String eventId
+        +String actorId
+        +String correlationId
+        +DateTime timestamp
+    }
+    class OutboxEvent {
+        +String eventId
+        +String operationId
+        +String deliveryStatus
+    }
+    Account "0..1" -- "1" LedgerAccount : customer deposit liability
+    JournalEntry "1" *-- "2..*" Posting
+    LedgerAccount "1" -- "0..*" Posting
+    TransferRequest "1" --> "0..1" JournalEntry : successful posting
+    TransferRequest "0..*" --> "1" Account : source
+    TransferRequest "0..*" --> "1" Account : destination
+    Account "1" -- "0..*" Hold
+    JournalEntry "1" -- "0..*" OutboxEvent
+    TransferRequest "1" -- "1..*" AuditEvent
