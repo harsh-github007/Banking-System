@@ -1,0 +1,19 @@
+flowchart LR
+    C[Customer]
+    ATM[ATM device and journal]
+    Auth[Card authorization adapter]
+    W[Withdrawal Service]
+    DB[(Ledger and holds)]
+    Rec[Reconciliation worker]
+    C -->|1. Card and protected PIN entry| ATM
+    ATM -->|2. Protected authentication exchange| Auth
+    Auth -->|3. Authorized session or rejection| ATM
+    ATM -->|4. Withdrawal with unique device operation ID| W
+    W -->|5. Reserve available funds and audit| DB
+    W -->|6. Authorized amount and hold ID| ATM
+    ATM -->|7. Dispense attempt and durable outcome| ATM
+    ATM -->|8. Confirmed result; retry same operation ID| W
+    W -->|9. Settle journal or release hold| DB
+    ATM -->|10. Receipt or pending status| C
+    Rec -->|11. Query uncertain device outcomes| ATM
+    Rec -->|12. Resolve held request using evidence| W

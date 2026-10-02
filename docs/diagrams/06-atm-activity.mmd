@@ -1,0 +1,20 @@
+flowchart TD
+    S([Start]) --> A[Authorize card session]
+    A --> V{Authorized?}
+    V -->|No| R[Reject and audit]
+    V -->|Yes| Q[Validate amount, limits and active account]
+    Q --> H{Available funds and ATM cash?}
+    H -->|No| R
+    H -->|Yes| Hold[Create hold and durable request]
+    Hold --> D[Request device dispense]
+    D --> O{Outcome proven?}
+    O -->|Cash dispensed| P[Post balanced journal and settle hold atomically]
+    O -->|No cash dispensed| Release[Release hold idempotently]
+    O -->|Timeout or ambiguous| Pending[Keep pending hold and investigate]
+    Pending --> Reconcile[Compare device journal and request record]
+    Reconcile --> O
+    P --> Receipt[Return posted receipt]
+    Release --> Failed[Return failed receipt]
+    R --> E([Finish])
+    Receipt --> E
+    Failed --> E

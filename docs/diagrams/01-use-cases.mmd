@@ -1,0 +1,29 @@
+flowchart LR
+    customer[Customer]
+    receptionist[Receptionist]
+    cashier[Cashier]
+    accountant[Accountant]
+    manager[Branch Manager]
+    admin[Administrator]
+    subgraph Banking[Banking system boundary]
+        onboarding[Open account and verify identity]
+        balances[View balances and statements]
+        transfer[Request internal transfer]
+        cash[Record counter cash transaction]
+        atm[Request ATM withdrawal]
+        cheque[Issue or stop cheque and process clearing]
+        deposit[Open or redeem fixed deposit]
+        apply[Submit loan application]
+        verify[Verify loan documents]
+        decide[Approve or reject loan]
+        fund[Disburse approved loan]
+        complaint[Raise and resolve complaint]
+        products[Set products and rates]
+        access[Manage staff access]
+    end
+    customer --- onboarding & balances & transfer & atm & deposit & apply & complaint
+    receptionist --- onboarding & apply & complaint
+    cashier --- cash & cheque
+    accountant --- verify & fund
+    manager --- decide & products
+    admin --- access

@@ -1,0 +1,34 @@
+sequenceDiagram
+    actor C as Customer
+    participant Auth as Access Control
+    participant T as Transfer Service
+    participant DB as Ledger Database
+    participant N as Notification Worker
+    C->>Auth: Authenticated transfer request and idempotency key
+    Auth->>Auth: Verify ownership, signing rule and permission
+    Auth->>T: Authorized command
+    T->>DB: Begin transaction, claim unique request key
+    alt Existing key with identical payload
+        DB-->>T: Stored request result
+        T->>DB: End request transaction
+        T-->>C: Return same result
+    else Existing key with different payload
+        T->>DB: Roll back
+        T-->>C: Reject key reuse conflict
+    else New request
+        T->>DB: Lock both accounts in stable ID order
+        T->>DB: Check active states, currency, limits and available funds
+        alt Checks fail
+            T->>DB: Persist rejected result and audit event, commit
+            T-->>C: Rejected with reason
+        else Checks pass
+            T->>DB: Insert balanced journal postings, result, audit and outbox
+            T->>DB: Commit all changes together
+            DB-->>T: Durable result
+            T-->>C: Posted with operation ID
+            N->>DB: Read committed outbox events
+            N-->>C: Deliver notification with event ID
+        end
+    end
+    Note over T,DB: Unknown commit outcome: look up the same request key before retrying
+    Note over N,C: Notification failure does not undo a committed transfer
