@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> Issued
+    Issued --> Stopped: stop accepted before settlement
+    Issued --> Presented: received for clearing
+    Presented --> Returned: invalid details or unavailable funds
+    Presented --> SettlementPending: checks pass and funds reserved
+    SettlementPending --> Cleared: settlement posting confirmed
+    SettlementPending --> Returned: confirmed settlement failure
+    SettlementPending --> Stopped: stop wins serialized race before settlement
+    Cleared --> [*]
+    Returned --> [*]
+    Stopped --> [*]
+    note right of SettlementPending
+        Stop and settlement must be serialized.
+        A paid cheque cannot be marked stopped.
+    end note

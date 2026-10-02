@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> PendingVerification
+    PendingVerification --> Active: identity and product checks complete
+    PendingVerification --> Rejected: onboarding declined
+    Active --> Restricted: authorized restriction
+    Restricted --> Active: authorized release
+    Active --> Closing: closure requested
+    Closing --> Active: closure cancelled
+    Closing --> Closed: zero balance and no unresolved holds or obligations
+    Rejected --> [*]
+    Closed --> [*]
+    note right of Restricted
+        Allowed credits and blocked debits
+        depend on the recorded restriction policy.
+        Login lockout is a separate identity state.
+    end note
