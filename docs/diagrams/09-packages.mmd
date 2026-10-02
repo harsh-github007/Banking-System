@@ -1,0 +1,13 @@
+flowchart TD
+    Channels[Channel adapters]
+    Application[Application services]
+    Domain[Domain model and policies]
+    Ports[Repository and event ports]
+    Infrastructure[Infrastructure implementations]
+    Channels --> Application
+    Application --> Domain
+    Application --> Ports
+    Infrastructure --> Ports
+    Infrastructure --> Domain
+    note[Composition root wires implementations to ports]
+    note -.-> Application & Infrastructure
